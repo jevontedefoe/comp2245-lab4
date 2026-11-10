@@ -29,6 +29,6 @@ read the `catalogue` database in MySQL.
 4. Open <http://localhost:8000/>. Opening `index.html` straight from the
    file system won't work, because `fetch()` needs the server.
 
-## Browsers tested
+## Browsers tested: chrome
 
 - 

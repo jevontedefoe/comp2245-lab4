@@ -2,10 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
     const tbody = document.querySelector('tbody');
     const statusDiv = document.querySelector('#status');
+    const searchButton = form.querySelector('button[type="submit"]');
+    const subjectSelect = document.querySelector('#subject');
+    const availableCheckbox = document.querySelector('input[name="available"]');
 
     function fetchBooks() {
         const formData = new FormData(form);
         const params = new URLSearchParams(formData);
+
+        statusDiv.textContent = 'Searching...';
+        searchButton.disabled = true;
 
         fetch(`books.php?${params.toString()}`)
             .then(response => {
@@ -58,16 +64,21 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error fetching books:', error);
+                tbody.replaceChildren();
+                statusDiv.textContent = "Couldn't load the books. Please try again.";
+            })
+            .finally(() => {
+                searchButton.disabled = false;
             });
     }
 
+    
     fetch('subjects.php')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load subjects');
             return response.json();
         })
         .then(subjects => {
-            const subjectSelect = document.querySelector('#subject');
             subjects.forEach(subject => {
                 const option = document.createElement('option');
                 option.value = subject.id;
@@ -77,11 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching subjects:', error));
 
-  
+   
     fetchBooks();
 
+    
     form.addEventListener('submit', event => {
         event.preventDefault();
         fetchBooks();
     });
+
+   
+    subjectSelect.addEventListener('change', fetchBooks);
+    if (availableCheckbox) {
+        availableCheckbox.addEventListener('change', fetchBooks);
+    }
 });
